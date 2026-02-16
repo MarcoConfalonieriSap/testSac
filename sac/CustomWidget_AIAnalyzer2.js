@@ -200,7 +200,7 @@
             this.inizializeVariable();
 
             this.addChatMessage(
-                'Benvenuto nel widget di analisi personalizzato SAC. Scrivi o usa il microfono.',
+                'Benvenuto nel widget di analisi personalizzato SAC. Scrivi qualcosa o usa il microfono.',
                 'assistant'
             );
 
