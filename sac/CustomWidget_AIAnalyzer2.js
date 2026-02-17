@@ -45,6 +45,69 @@
             border-bottom-left-radius: 2px;
         }
 
+        .chat-bubble h1, .chat-bubble h2, .chat-bubble h3 {
+            margin: 8px 0 4px 0;
+            line-height: 1.3;
+        }
+        .chat-bubble h1 { font-size: 1.3em; }
+        .chat-bubble h2 { font-size: 1.15em; }
+        .chat-bubble h3 { font-size: 1.05em; }
+        
+        .chat-bubble code {
+            background: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        
+        .chat-bubble pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 10px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+        
+        .chat-bubble pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        
+        .chat-bubble ul, .chat-bubble ol {
+            margin: 6px 0;
+            padding-left: 20px;
+        }
+        
+        .chat-bubble li {
+            margin: 3px 0;
+        }
+        
+        .chat-bubble a {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        
+        .chat-bubble p {
+            margin: 6px 0;
+        }
+        
+        .chat-bubble hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        
+        .chat-bubble strong {
+            font-weight: bold;
+        }
+        
+        .chat-bubble em {
+            font-style: italic;
+        }
+
         .message-row {
             display: flex;
             align-items: center;
@@ -457,7 +520,7 @@
 
                 const bubble = document.createElement('div');
                 bubble.classList.add('chat-bubble', role);
-                bubble.textContent = text;
+                bubble.innerHTML = text; // Usa innerHTML per renderizzare HTML
 
                 const speakerButton = document.createElement('button');
                 speakerButton.classList.add('speaker-button');
@@ -523,12 +586,75 @@
                 const response = await fetch(this._serviceUrl, requestOptions);   //'https://api.ai.prod.eu-central-1.aws.ml.hana.ondemand.com/v2/inference/deployments/d62a8d86af505498/chat/completions?api-version=2023-12-01-preview'
                 var jsonData = await response.json();
 
-                return jsonData.message
+                return this.markdownToHtml(jsonData.message);
             }
             catch (error) {
 
                 return "Errore nella chiamata al LLM: " + error.message;
             }
+        }
+
+        markdownToHtml(markdown) {
+            if (!markdown) return '';
+            
+            let html = markdown;
+            
+            // Escape HTML entities
+            html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
+            // Code blocks (```)
+            html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            
+            // Inline code (`)
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Headers
+            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+            
+            // Bold (**text** or __text__)
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+            
+            // Italic (*text* or _text_)
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+            
+            // Strikethrough (~~text~~)
+            html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
+            
+            // Links [text](url)
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // Unordered lists (- or *)
+            html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+            
+            // Ordered lists (1. 2. etc)
+            html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+            
+            // Horizontal rule (--- or ***)
+            html = html.replace(/^(---|\*\*\*)$/gm, '<hr>');
+            
+            // Line breaks
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+            
+            // Wrap in paragraph
+            html = '<p>' + html + '</p>';
+            
+            // Clean up empty paragraphs
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p>(<h[123]>)/g, '$1');
+            html = html.replace(/(<\/h[123]>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<ul>)/g, '$1');
+            html = html.replace(/(<\/ul>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<pre>)/g, '$1');
+            html = html.replace(/(<\/pre>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<hr>)<\/p>/g, '$1');
+            
+            return html;
         }
 
         // Helper method to get token for SAP AI
