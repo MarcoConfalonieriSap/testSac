@@ -603,7 +603,7 @@
                     // parse measures
                     ...Object.keys(measures).reduce((acc, measure) => {
                         if (record.hasOwnProperty(measure)) {
-                            acc[measures[measure].description] = record[measure].raw;
+                            acc[measures[measure].label] = record[measure].raw;
                         }
                         return acc;
                     }, {})
