@@ -706,7 +706,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>System Message(test)</td>
+                                <td>System Message</td>
                                 <td><input id="systemMessage" type="text"></td>
                             </tr>
                             <tr id="userMessageRow" style="display: none;">
