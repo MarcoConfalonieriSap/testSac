@@ -325,6 +325,14 @@
                 this._llmModel = changedProperties["llmModel"];
                 this.llmModelSelect.value = this._llmModel;
             }
+            if ("audioLanguage" in changedProperties) {
+                //console.log("Language changed to: ", changedProperties["language"]);
+                this.languageSelection = changedProperties["audioLanguage"] || 'it-IT';
+                this.initializeVoice();
+                if (this._recognition) {
+                    this._recognition.lang = this.languageSelection;
+                }
+            }
 
             this.getDataSource();
 		}
