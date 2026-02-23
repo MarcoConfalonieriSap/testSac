@@ -707,11 +707,11 @@
                             </tr>
                             <tr>
                                 <td>System Message</td>
-                                <td><textarea id="systemMessage" rows="4" style="width:100%;resize:vertical;overflow-y:auto;word-break:break-word;"></textarea></td>
+                                <td><input id="systemMessage" type="text"></td>
                             </tr>
                             <tr id="userMessageRow" style="display: none;">
                                 <td>User Message</td>
-                                <td><textarea id="userMessage" rows="4" style="width:100%;resize:vertical;overflow-y:auto;word-break:break-word;"></textarea></td>
+                                <td><input id="userMessage" type="text"></td>
                             </tr>
                             <tr>
                                 <td>Llm properties (json)</td>
