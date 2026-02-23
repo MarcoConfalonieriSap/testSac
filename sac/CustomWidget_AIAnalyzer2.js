@@ -187,37 +187,11 @@
             this.playButton = this._shadowRoot.getElementById('playButton');
             this.generatedAnalysis = this._shadowRoot.getElementById('generatedAnalysis');
 
-            this.llmModelSelect = this._shadowRoot.getElementById('llmModelSelect');
-            this.systemMessageArea = this._shadowRoot.getElementById('systemMessageArea');
-            this.userMessageArea = this._shadowRoot.getElementById('userMessageArea');
-            this.llmPropertiesInput = this._shadowRoot.getElementById('llmPropertiesInput');
-
             this.languageSelection = 'it-IT' //change to English 'en-US'
             this.speechRate = 1.0 // Velocità della voce
             this.speechPitch = 0.9 // Altezza della voce
             this.speechVolume = 0.8 // Volume della voce
             this.selectedVoice = null // Voce selezionata per TTS
-            // Sync LLM settings to internal variables
-            /*
-            this.llmModelSelect.addEventListener('change', () => {
-                this._llmModel = this.llmModelSelect.value;
-            });
-            this.systemMessageArea.addEventListener('input', () => {
-                this._systemMessage = this.systemMessageArea.value;
-            });
-            this.userMessageArea.addEventListener('input', () => {
-                this._userMessage = this.userMessageArea.value;
-            });
-            this.llmPropertiesInput.addEventListener('input', () => {
-                this._llmProperties = this.llmPropertiesInput.value;
-            });
-            */
-
-            // Set default values
-            this._llmModel = this.llmModelSelect.value;
-            this._systemMessage = this.systemMessageArea.value;
-            this._userMessage = this.userMessageArea.value;
-            this._llmProperties = this.llmPropertiesInput.value;
 
             this._isListening = false
             this.addSpeechToText() // Add microphone support
@@ -254,6 +228,7 @@
             this._systemMessage = "";
             this._userMessage = "";
             this._llmProperties = {};
+            this._audioLanguage = "it-IT";
             
             this._dataJson = null;
 
@@ -299,39 +274,28 @@
                 this._authUrl = changedProperties["authUrl"];
 			}
             if ("tipologiaChat" in changedProperties) {
+                //console.log("Single Message changed to: ", changedProperties["tipologiaChat"]);
                 this._tipologiaChat = changedProperties["tipologiaChat"];
                 this.updateInputState();
             }
-            if ("audioLanguage" in changedProperties) {
-                this.languageSelection = changedProperties["audioLanguage"] || 'it-IT';
-                this.initializeVoice();
-                if (this._recognition) {
-                    this._recognition.lang = this.languageSelection;
-                }
-            }
             if ("systemMessage" in changedProperties) {
+                //console.log("System Message changed to: ", changedProperties["systemMessage"]);
                 this._systemMessage = changedProperties["systemMessage"];
-                this.systemMessageArea.value = this._systemMessage;
             }
             if ("userMessage" in changedProperties) {
+                //console.log("User Message changed to: ", changedProperties["userMessage"]);
                 this._userMessage = changedProperties["userMessage"];
-                this.userMessageArea.value = this._userMessage;
             }
             if ("llmProperties" in changedProperties) {
+                //console.log("Llm Properties changed to: ", changedProperties["llmProperties"]);
                 this._llmProperties = changedProperties["llmProperties"];
-                this.llmPropertiesInput.value = this._llmProperties;
             }
-            if ("llmModel" in changedProperties) {
-                this._llmModel = changedProperties["llmModel"];
-                this.llmModelSelect.value = this._llmModel;
-            }
+
             if ("audioLanguage" in changedProperties) {
-                //console.log("Language changed to: ", changedProperties["language"]);
-                this.languageSelection = changedProperties["audioLanguage"] || 'it-IT';
-                this.initializeVoice();
-                if (this._recognition) {
-                    this._recognition.lang = this.languageSelection;
-                }
+                //console.log("Audio Language changed to: ", changedProperties["audioLanguage"]);
+                 this._audioLanguage = changedProperties["audioLanguage"];
+                 this.languageSelection = this._audioLanguage;
+                 this.initializeVoice(); // Re-inizializza la voce con la nuova lingua
             }
 
             this.getDataSource();
@@ -450,7 +414,6 @@
                     }
                     
                     // Avvia timer di 2 secondi per lo spegnimento automatico e invio LLM
-                    /*
                     silenceTimer = setTimeout(async () => {
                         if (this._recognition) {
                             this._recognition.stop();
@@ -458,7 +421,6 @@
                             await this._handleLlm();
                         }
                     }, 2000);
-                    */
                 };
 
                 this._recognition.onend = () => {
@@ -550,7 +512,7 @@
                 "messages": messages,
                 "output": null,
                 "ai_group": "default",
-                "ai_model": this._llmModel
+                "ai_model": "gemini-2.5-flash"
                 //"properties": {"temperature": 1}
             }
 
