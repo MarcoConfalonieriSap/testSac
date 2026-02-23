@@ -655,6 +655,18 @@
                                     </select>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>Lingua audio</td>
+                                <td>
+                                    <select id="audioLanguage">
+                                        <option value="it-IT">Italiano</option>
+                                        <option value="en-US">Inglese</option>
+                                        <option value="de-DE">Tedesco</option>
+                                        <option value="fr-FR">Francese</option>
+                                        <option value="es-ES">Spagnolo</option>
+                                    </select>
+                                </td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -684,6 +696,15 @@
                 <div class="accordion-content">
                     <div class="accordion-inner">
                         <table>
+                            <tr>
+                                <td>LLM Model</td>
+                                <td>
+                                    <select id="llmModel">
+                                        <option value="gpt-5">gpt-5</option>
+                                        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                                    </select>
+                                </td>
+                            </tr>
                             <tr>
                                 <td>System Message</td>
                                 <td><input id="systemMessage" type="text"></td>
@@ -739,8 +760,10 @@
                         clientSecret: this.clientSecret,
                         authUrl: this.authUrl,
                         tipologiaChat: this.tipologiaChat,
+                        audioLanguage: this.audioLanguage,
                         systemMessage: this.systemMessage,
                         userMessage: this.userMessage,
+                        llmModel: this.llmModel,
                         llmProperties: this.llmProperties
                     }
                 }
@@ -773,6 +796,12 @@
 
         set tipologiaChat(tipologiaChat) { this._shadowRoot.getElementById("tipologiaChat").value = tipologiaChat }
         get tipologiaChat() { return this._shadowRoot.getElementById("tipologiaChat").value }
+
+        set audioLanguage(audioLanguage) { this._shadowRoot.getElementById("audioLanguage").value = audioLanguage }
+        get audioLanguage() { return this._shadowRoot.getElementById("audioLanguage").value }
+
+        set llmModel(llmModel) { this._shadowRoot.getElementById("llmModel").value = llmModel }
+        get llmModel() { return this._shadowRoot.getElementById("llmModel").value }
 
         set systemMessage(systemMessage) { this._shadowRoot.getElementById("systemMessage").value = systemMessage }
         get systemMessage() { return this._shadowRoot.getElementById("systemMessage").value }
