@@ -158,27 +158,6 @@
                 <button id="micButton" title="Avvia riconoscimento vocale"></button>
                 <button id="playButton" title="Avvia llm"></button>
             </div>
-            <div id="llmSettings" style="margin-top:16px;">
-                <div class="llm-settings-row">
-                    <span class="llm-settings-label">LLM Model:</span>
-                    <select id="llmModelSelect" class="llm-settings-select">
-                        <option value="gpt-5">gpt-5</option>
-                        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-                    </select>
-                </div>
-                <div class="llm-settings-row">
-                    <span class="llm-settings-label">System Message:</span>
-                    <textarea id="systemMessageArea" class="llm-settings-textarea" rows="4" placeholder="System message..."></textarea>
-                </div>
-                <div class="llm-settings-row">
-                    <span class="llm-settings-label">User Message:</span>
-                    <textarea id="userMessageArea" class="llm-settings-textarea" rows="4" placeholder="User message..."></textarea>
-                </div>
-                <div class="llm-settings-row">
-                    <span class="llm-settings-label">LLM Properties:</span>
-                    <input id="llmPropertiesInput" type="text" class="llm-settings-select" placeholder="Properties..." />
-                </div>
-            </div>
         </div>
     </body>
     `;
