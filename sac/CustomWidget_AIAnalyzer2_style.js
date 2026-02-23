@@ -655,6 +655,18 @@
                                     </select>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>Lingua audio</td>
+                                <td>
+                                    <select id="audioLanguage">
+                                        <option value="it-IT">Italiano</option>
+                                        <option value="en-US">Inglese</option>
+                                        <option value="de-DE">Tedesco</option>
+                                        <option value="fr-FR">Francese</option>
+                                        <option value="es-ES">Spagnolo</option>
+                                    </select>
+                                </td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -739,6 +751,7 @@
                         clientSecret: this.clientSecret,
                         authUrl: this.authUrl,
                         tipologiaChat: this.tipologiaChat,
+                        audioLanguage: this.audioLanguage,
                         systemMessage: this.systemMessage,
                         userMessage: this.userMessage,
                         llmProperties: this.llmProperties
@@ -773,6 +786,9 @@
 
         set tipologiaChat(tipologiaChat) { this._shadowRoot.getElementById("tipologiaChat").value = tipologiaChat }
         get tipologiaChat() { return this._shadowRoot.getElementById("tipologiaChat").value }
+
+        set audioLanguage(audioLanguage) { this._shadowRoot.getElementById("audioLanguage").value = audioLanguage }
+        get audioLanguage() { return this._shadowRoot.getElementById("audioLanguage").value }
 
         set systemMessage(systemMessage) { this._shadowRoot.getElementById("systemMessage").value = systemMessage }
         get systemMessage() { return this._shadowRoot.getElementById("systemMessage").value }

@@ -45,69 +45,6 @@
             border-bottom-left-radius: 2px;
         }
 
-        .chat-bubble h1, .chat-bubble h2, .chat-bubble h3 {
-            margin: 8px 0 4px 0;
-            line-height: 1.3;
-        }
-        .chat-bubble h1 { font-size: 1.3em; }
-        .chat-bubble h2 { font-size: 1.15em; }
-        .chat-bubble h3 { font-size: 1.05em; }
-        
-        .chat-bubble code {
-            background: #f0f0f0;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-        
-        .chat-bubble pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 10px;
-            border-radius: 6px;
-            overflow-x: auto;
-            margin: 8px 0;
-        }
-        
-        .chat-bubble pre code {
-            background: transparent;
-            color: inherit;
-            padding: 0;
-        }
-        
-        .chat-bubble ul, .chat-bubble ol {
-            margin: 6px 0;
-            padding-left: 20px;
-        }
-        
-        .chat-bubble li {
-            margin: 3px 0;
-        }
-        
-        .chat-bubble a {
-            color: #0066cc;
-            text-decoration: underline;
-        }
-        
-        .chat-bubble p {
-            margin: 6px 0;
-        }
-        
-        .chat-bubble hr {
-            border: none;
-            border-top: 1px solid #ccc;
-            margin: 10px 0;
-        }
-        
-        .chat-bubble strong {
-            font-weight: bold;
-        }
-        
-        .chat-bubble em {
-            font-style: italic;
-        }
-
         .message-row {
             display: flex;
             align-items: center;
@@ -221,6 +158,27 @@
                 <button id="micButton" title="Avvia riconoscimento vocale"></button>
                 <button id="playButton" title="Avvia llm"></button>
             </div>
+            <div id="llmSettings" style="margin-top:16px;">
+                <div class="llm-settings-row">
+                    <span class="llm-settings-label">LLM Model:</span>
+                    <select id="llmModelSelect" class="llm-settings-select">
+                        <option value="gpt-5">gpt-5</option>
+                        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                    </select>
+                </div>
+                <div class="llm-settings-row">
+                    <span class="llm-settings-label">System Message:</span>
+                    <textarea id="systemMessageArea" class="llm-settings-textarea" rows="4" placeholder="System message..."></textarea>
+                </div>
+                <div class="llm-settings-row">
+                    <span class="llm-settings-label">User Message:</span>
+                    <textarea id="userMessageArea" class="llm-settings-textarea" rows="4" placeholder="User message..."></textarea>
+                </div>
+                <div class="llm-settings-row">
+                    <span class="llm-settings-label">LLM Properties:</span>
+                    <input id="llmPropertiesInput" type="text" class="llm-settings-select" placeholder="Properties..." />
+                </div>
+            </div>
         </div>
     </body>
     `;
@@ -250,11 +208,35 @@
             this.playButton = this._shadowRoot.getElementById('playButton');
             this.generatedAnalysis = this._shadowRoot.getElementById('generatedAnalysis');
 
+            this.llmModelSelect = this._shadowRoot.getElementById('llmModelSelect');
+            this.systemMessageArea = this._shadowRoot.getElementById('systemMessageArea');
+            this.userMessageArea = this._shadowRoot.getElementById('userMessageArea');
+            this.llmPropertiesInput = this._shadowRoot.getElementById('llmPropertiesInput');
+
             this.languageSelection = 'it-IT' //change to English 'en-US'
             this.speechRate = 1.0 // Velocità della voce
             this.speechPitch = 0.9 // Altezza della voce
             this.speechVolume = 0.8 // Volume della voce
             this.selectedVoice = null // Voce selezionata per TTS
+            // Sync LLM settings to internal variables
+            this.llmModelSelect.addEventListener('change', () => {
+                this._llmModel = this.llmModelSelect.value;
+            });
+            this.systemMessageArea.addEventListener('input', () => {
+                this._systemMessage = this.systemMessageArea.value;
+            });
+            this.userMessageArea.addEventListener('input', () => {
+                this._userMessage = this.userMessageArea.value;
+            });
+            this.llmPropertiesInput.addEventListener('input', () => {
+                this._llmProperties = this.llmPropertiesInput.value;
+            });
+
+            // Set default values
+            this._llmModel = this.llmModelSelect.value;
+            this._systemMessage = this.systemMessageArea.value;
+            this._userMessage = this.userMessageArea.value;
+            this._llmProperties = this.llmPropertiesInput.value;
 
             this._isListening = false
             this.addSpeechToText() // Add microphone support
@@ -336,21 +318,31 @@
                 this._authUrl = changedProperties["authUrl"];
 			}
             if ("tipologiaChat" in changedProperties) {
-                //console.log("Single Message changed to: ", changedProperties["tipologiaChat"]);
                 this._tipologiaChat = changedProperties["tipologiaChat"];
                 this.updateInputState();
             }
+            if ("audioLanguage" in changedProperties) {
+                this.languageSelection = changedProperties["audioLanguage"] || 'it-IT';
+                this.initializeVoice();
+                if (this._recognition) {
+                    this._recognition.lang = this.languageSelection;
+                }
+            }
             if ("systemMessage" in changedProperties) {
-                //console.log("System Message changed to: ", changedProperties["systemMessage"]);
                 this._systemMessage = changedProperties["systemMessage"];
+                this.systemMessageArea.value = this._systemMessage;
             }
             if ("userMessage" in changedProperties) {
-                //console.log("User Message changed to: ", changedProperties["userMessage"]);
                 this._userMessage = changedProperties["userMessage"];
+                this.userMessageArea.value = this._userMessage;
             }
             if ("llmProperties" in changedProperties) {
-                //console.log("Llm Properties changed to: ", changedProperties["llmProperties"]);
                 this._llmProperties = changedProperties["llmProperties"];
+                this.llmPropertiesInput.value = this._llmProperties;
+            }
+            if ("llmModel" in changedProperties) {
+                this._llmModel = changedProperties["llmModel"];
+                this.llmModelSelect.value = this._llmModel;
             }
 
             this.getDataSource();
@@ -469,6 +461,7 @@
                     }
                     
                     // Avvia timer di 2 secondi per lo spegnimento automatico e invio LLM
+                    /*
                     silenceTimer = setTimeout(async () => {
                         if (this._recognition) {
                             this._recognition.stop();
@@ -476,6 +469,7 @@
                             await this._handleLlm();
                         }
                     }, 2000);
+                    */
                 };
 
                 this._recognition.onend = () => {
@@ -520,7 +514,7 @@
 
                 const bubble = document.createElement('div');
                 bubble.classList.add('chat-bubble', role);
-                bubble.innerHTML = text; // Usa innerHTML per renderizzare HTML
+                bubble.textContent = text;
 
                 const speakerButton = document.createElement('button');
                 speakerButton.classList.add('speaker-button');
@@ -567,7 +561,7 @@
                 "messages": messages,
                 "output": null,
                 "ai_group": "default",
-                "ai_model": "gemini-2.5-flash"
+                "ai_model": this._llmModel
                 //"properties": {"temperature": 1}
             }
 
@@ -586,75 +580,12 @@
                 const response = await fetch(this._serviceUrl, requestOptions);   //'https://api.ai.prod.eu-central-1.aws.ml.hana.ondemand.com/v2/inference/deployments/d62a8d86af505498/chat/completions?api-version=2023-12-01-preview'
                 var jsonData = await response.json();
 
-                return this.markdownToHtml(jsonData.message);
+                return jsonData.message
             }
             catch (error) {
 
                 return "Errore nella chiamata al LLM: " + error.message;
             }
-        }
-
-        markdownToHtml(markdown) {
-            if (!markdown) return '';
-            
-            let html = markdown;
-            
-            // Escape HTML entities
-            html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            
-            // Code blocks (```)
-            html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-            
-            // Inline code (`)
-            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-            
-            // Headers
-            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-            html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-            html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-            
-            // Bold (**text** or __text__)
-            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-            html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
-            
-            // Italic (*text* or _text_)
-            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-            html = html.replace(/_(.+?)_/g, '<em>$1</em>');
-            
-            // Strikethrough (~~text~~)
-            html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
-            
-            // Links [text](url)
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-            
-            // Unordered lists (- or *)
-            html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
-            html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-            
-            // Ordered lists (1. 2. etc)
-            html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-            
-            // Horizontal rule (--- or ***)
-            html = html.replace(/^(---|\*\*\*)$/gm, '<hr>');
-            
-            // Line breaks
-            html = html.replace(/\n\n/g, '</p><p>');
-            html = html.replace(/\n/g, '<br>');
-            
-            // Wrap in paragraph
-            html = '<p>' + html + '</p>';
-            
-            // Clean up empty paragraphs
-            html = html.replace(/<p><\/p>/g, '');
-            html = html.replace(/<p>(<h[123]>)/g, '$1');
-            html = html.replace(/(<\/h[123]>)<\/p>/g, '$1');
-            html = html.replace(/<p>(<ul>)/g, '$1');
-            html = html.replace(/(<\/ul>)<\/p>/g, '$1');
-            html = html.replace(/<p>(<pre>)/g, '$1');
-            html = html.replace(/(<\/pre>)<\/p>/g, '$1');
-            html = html.replace(/<p>(<hr>)<\/p>/g, '$1');
-            
-            return html;
         }
 
         // Helper method to get token for SAP AI
@@ -729,7 +660,7 @@
                     // parse measures
                     ...Object.keys(measures).reduce((acc, measure) => {
                         if (record.hasOwnProperty(measure)) {
-                            acc[measures[measure].label] = record[measure].raw;
+                            acc[measures[measure].description] = record[measure].raw;
                         }
                         return acc;
                     }, {})
