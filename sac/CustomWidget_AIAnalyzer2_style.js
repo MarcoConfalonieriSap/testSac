@@ -165,9 +165,15 @@
                 transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
             }
 
+
             textarea {
                 resize: vertical;
-                min-height: 100px;
+                min-height: 80px;
+                max-height: 200px;
+                overflow: auto;
+                white-space: pre-wrap;
+                word-break: break-word;
+                box-sizing: border-box;
             }
 
             input:focus,
@@ -655,18 +661,6 @@
                                     </select>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>Lingua audio</td>
-                                <td>
-                                    <select id="audioLanguage">
-                                        <option value="it-IT">Italiano</option>
-                                        <option value="en-US">Inglese</option>
-                                        <option value="de-DE">Tedesco</option>
-                                        <option value="fr-FR">Francese</option>
-                                        <option value="es-ES">Spagnolo</option>
-                                    </select>
-                                </td>
-                            </tr>
                         </table>
                     </div>
                 </div>
@@ -707,11 +701,11 @@
                             </tr>
                             <tr>
                                 <td>System Message</td>
-                                <td><input id="systemMessage" type="text"></td>
+                                <td><textarea id="systemMessage" rows="4" style="resize:vertical; min-height:80px; width:100%; overflow:auto; white-space:pre-wrap; word-break:break-word;"></textarea></td>
                             </tr>
                             <tr id="userMessageRow" style="display: none;">
                                 <td>User Message</td>
-                                <td><input id="userMessage" type="text"></td>
+                                <td><textarea id="userMessage" rows="4" style="resize:vertical; min-height:80px; width:100%; overflow:auto; white-space:pre-wrap; word-break:break-word;"></textarea></td>
                             </tr>
                             <tr>
                                 <td>Llm properties (json)</td>
@@ -760,15 +754,16 @@
                         clientSecret: this.clientSecret,
                         authUrl: this.authUrl,
                         tipologiaChat: this.tipologiaChat,
-                        audioLanguage: this.audioLanguage,
                         systemMessage: this.systemMessage,
                         userMessage: this.userMessage,
-                        llmModel: this.llmModel,
-                        llmProperties: this.llmProperties
+                        llmProperties: this.llmProperties,
+                        llmModel: this.llmModel
                     }
                 }
             }))
         }
+    set llmModel(llmModel) { this._shadowRoot.getElementById("llmModel").value = llmModel }
+    get llmModel() { return this._shadowRoot.getElementById("llmModel").value }
 
         toggleAccordion(header) {
             const content = header.nextElementSibling;
@@ -796,12 +791,6 @@
 
         set tipologiaChat(tipologiaChat) { this._shadowRoot.getElementById("tipologiaChat").value = tipologiaChat }
         get tipologiaChat() { return this._shadowRoot.getElementById("tipologiaChat").value }
-
-        set audioLanguage(audioLanguage) { this._shadowRoot.getElementById("audioLanguage").value = audioLanguage }
-        get audioLanguage() { return this._shadowRoot.getElementById("audioLanguage").value }
-
-        set llmModel(llmModel) { this._shadowRoot.getElementById("llmModel").value = llmModel }
-        get llmModel() { return this._shadowRoot.getElementById("llmModel").value }
 
         set systemMessage(systemMessage) { this._shadowRoot.getElementById("systemMessage").value = systemMessage }
         get systemMessage() { return this._shadowRoot.getElementById("systemMessage").value }
