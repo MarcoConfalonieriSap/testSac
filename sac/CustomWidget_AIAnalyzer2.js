@@ -285,14 +285,9 @@
                 //console.log("User Message changed to: ", changedProperties["userMessage"]);
                 this._userMessage = changedProperties["userMessage"];
             }
-
             if ("llmProperties" in changedProperties) {
                 //console.log("Llm Properties changed to: ", changedProperties["llmProperties"]);
                 this._llmProperties = changedProperties["llmProperties"];
-            }
-            if ("llmModel" in changedProperties) {
-                //console.log("LLM Model changed to: ", changedProperties["llmModel"]);
-                this._llmModel = changedProperties["llmModel"];
             }
 
             this.getDataSource();

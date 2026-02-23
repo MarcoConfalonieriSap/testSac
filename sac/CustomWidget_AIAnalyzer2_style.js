@@ -165,15 +165,9 @@
                 transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
             }
 
-
             textarea {
                 resize: vertical;
-                min-height: 80px;
-                max-height: 200px;
-                overflow: auto;
-                white-space: pre-wrap;
-                word-break: break-word;
-                box-sizing: border-box;
+                min-height: 100px;
             }
 
             input:focus,
@@ -691,21 +685,12 @@
                     <div class="accordion-inner">
                         <table>
                             <tr>
-                                <td>LLM Model</td>
-                                <td>
-                                    <select id="llmModel">
-                                        <option value="gpt-5">gpt-5</option>
-                                        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
                                 <td>System Message</td>
-                                <td><textarea id="systemMessage" rows="4" style="resize:vertical; min-height:80px; width:100%; overflow:auto; white-space:pre-wrap; word-break:break-word;"></textarea></td>
+                                <td><input id="systemMessage" type="text"></td>
                             </tr>
                             <tr id="userMessageRow" style="display: none;">
                                 <td>User Message</td>
-                                <td><textarea id="userMessage" rows="4" style="resize:vertical; min-height:80px; width:100%; overflow:auto; white-space:pre-wrap; word-break:break-word;"></textarea></td>
+                                <td><input id="userMessage" type="text"></td>
                             </tr>
                             <tr>
                                 <td>Llm properties (json)</td>
@@ -756,14 +741,11 @@
                         tipologiaChat: this.tipologiaChat,
                         systemMessage: this.systemMessage,
                         userMessage: this.userMessage,
-                        llmProperties: this.llmProperties,
-                        llmModel: this.llmModel
+                        llmProperties: this.llmProperties
                     }
                 }
             }))
         }
-    set llmModel(llmModel) { this._shadowRoot.getElementById("llmModel").value = llmModel }
-    get llmModel() { return this._shadowRoot.getElementById("llmModel").value }
 
         toggleAccordion(header) {
             const content = header.nextElementSibling;
